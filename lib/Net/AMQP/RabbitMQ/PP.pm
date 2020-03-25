@@ -3,7 +3,7 @@ package Net::AMQP::RabbitMQ::PP;
 use strict;
 use warnings;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use Carp;
 use Cwd;
@@ -493,7 +493,7 @@ sub disconnect {
 			Net::AMQP::Protocol::Connection::Close->new(
 			),
 		],
-		resposnse_type => 'Net::AMQP::Protocol::Connection::CloseOk',
+		response_type => 'Net::AMQP::Protocol::Connection::CloseOk',
 	);
 
 	if( ! $self->_get_handle->close() ) {
@@ -544,6 +544,20 @@ sub channel_open {
 		],
 		response_type => 'Net::AMQP::Protocol::Channel::OpenOk',
 	);
+}
+
+sub channel_close {
+    my ( $self, %args ) = @_;
+
+    my $channel = $args{channel};
+
+    return $self->rpc_request(
+        channel       => $channel,
+        output        => [
+            Net::AMQP::Protocol::Channel::Close->new()
+        ],
+        response_type => 'Net::AMQP::Protocol::Channel::CloseOk',
+    );
 }
 
 sub exchange_declare {
